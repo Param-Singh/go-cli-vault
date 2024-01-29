@@ -55,5 +55,3 @@ func main() {
 	}
 }
 
-// complete getall command
-// encrypt the stored password
