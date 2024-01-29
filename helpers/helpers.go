@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -49,6 +50,23 @@ func UpdateAndSavePasswords(b []byte, site string, password string) (err error) 
 		os.WriteFile("./.vault-password/password.txt", []byte(allPasswordsRawString+site+"="+encryptedPassword+","), 0755)
 	}
 	return nil
+}
+
+// create the file which will contain passwords
+func MakeDir() {
+	f, err := os.OpenFile("./.vault-password/password.txt", os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil || f.Close() != nil {
+		log.Fatal(err)
+	}
+}
+
+// Read the file for all the passwords
+func ReadFile() (b []byte) {
+	b, err := os.ReadFile("./.vault-password/password.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return
 }
 
 func PrintHelpMenu() {
