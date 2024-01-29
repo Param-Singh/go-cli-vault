@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Welcome to Your Personal Cli Vault")
 	if !helpers.DoesDirExist(".vault-password") {
 		// Create an hidden folder
 		if err := os.Mkdir(".vault-password", 0755); err != nil {
@@ -17,6 +16,10 @@ func main() {
 		}
 	}
 	args := os.Args[1:]
+	if len(args) == 0 {
+		fmt.Println("No arguments provided\nuse help to see the help menu")
+		return
+	}
 	if args[0] == "help" {
 		helpers.PrintHelpMenu()
 		return
@@ -32,15 +35,25 @@ func main() {
 		log.Fatal(err)
 	}
 	helpers.GetAllPasswords(b)
-	if args[0] == "save" {
-		helpers.UpdateAndSavePasswords(b, args[1], args[2])
+	if args[0] == "set" {
+		err := helpers.UpdateAndSavePasswords(b, args[1], args[2])
+		if err != nil {
+			fmt.Println(err)
+		}
 		return
 	}
-
 	// getting password of the one selected by user
 	if args[0] == "get" {
 		key := args[1]
 		password := helpers.GetUserChosenPassword(key)
 		fmt.Println(password)
 	}
+	if args[0] == "getall" {
+		for site, password := range helpers.PasswordMap {
+			fmt.Println(site, "=> ", password)
+		}
+	}
 }
+
+// complete getall command
+// encrypt the stored password

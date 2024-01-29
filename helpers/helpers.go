@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	encryption "github.com/Param-Singh/go-cli-vault/encyption"
 )
 
 var PasswordMap = make(map[string]string)
+
+const secretkey string = "1234567890qwertyuiopasdf"
 
 func DoesDirExist(path string) bool {
 	if stat, err := os.Stat(path); err == nil && stat.IsDir() {
@@ -24,20 +28,37 @@ func GetAllPasswords(b []byte) {
 }
 
 func GetUserChosenPassword(key string) string {
-	return PasswordMap[key]
+	password, err := encryption.Decrypt(PasswordMap[key], secretkey)
+	if err != nil {
+		return ""
+	}
+	return password
+
 }
 
-func UpdateAndSavePasswords(b []byte, site string, password string) {
+func UpdateAndSavePasswords(b []byte, site string, password string) (err error) {
 	allPasswordsRawString := string(b[:])
-	fmt.Println(allPasswordsRawString, GetUserChosenPassword(site), site, len(site))
+	encryptedPassword, err := encryption.Encrypt(password, secretkey)
+	if err != nil {
+		return err
+	}
 	if strings.Contains(allPasswordsRawString, site) {
-		updatedContent := strings.Replace(allPasswordsRawString, GetUserChosenPassword(site), password, 1)
+		updatedContent := strings.Replace(allPasswordsRawString, GetUserChosenPassword(site), encryptedPassword, 1)
 		os.WriteFile("./.vault-password/password.txt", []byte(updatedContent), 0755)
 	} else {
-		os.WriteFile("./.vault-password/password.txt", []byte(allPasswordsRawString+site+"="+password+","), 0755)
+		os.WriteFile("./.vault-password/password.txt", []byte(allPasswordsRawString+site+"="+encryptedPassword+","), 0755)
 	}
+	return nil
 }
 
 func PrintHelpMenu() {
-	fmt.Println("To save or update a password use the following command\n save site password\nTo get a particular password enter the command\n get site\nTo get all use getall command")
+	fmt.Println("                ==> Cli Vault <==")
+	fmt.Println(`========================================================
+To save or update a password use the following command
+set site password
+========================================================
+To get a particular password enter the command
+get site
+========================================================
+To get all use getall command`)
 }
