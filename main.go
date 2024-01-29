@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Param-Singh/go-cli-vault/helpers"
+	"github.com/atotto/clipboard"
 )
 
 func main() {
@@ -38,11 +39,16 @@ func main() {
 	if args[0] == "get" {
 		key := args[1]
 		password := helpers.GetUserChosenPassword(key)
-		fmt.Println(password)
+		err := clipboard.WriteAll(password)
+		if err != nil {
+			fmt.Println("Failed to copy to clipboard")
+			fmt.Println(err)
+		}
+		fmt.Println("Password copied to clipboard !!")
 	}
 	if args[0] == "getall" {
-		for site, password := range helpers.PasswordMap {
-			fmt.Println(site, "=> ", password)
+		for site := range helpers.PasswordMap {
+			fmt.Println(site, "=> ", helpers.GetUserChosenPassword(site))
 		}
 	}
 }
