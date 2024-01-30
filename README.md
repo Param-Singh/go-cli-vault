@@ -1,5 +1,9 @@
 Are you also tired of opening and finding your password in your notes app whenever you tried to log into some website a long time
-OR fed up of changing your work gmail password every 2 weeks because your organisation sucks
+
+OR 
+fed up of changing your work gmail password every 2 weeks because your organisation sucks
+
+
 So i created a CLI Tools in Go where you can store your passwords and get it copied to your clipboard with one simple command
 
 myvault get gmail
